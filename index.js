@@ -14,10 +14,10 @@ const errorMiddleware = require("./src/middleware/errorMiddleware");
 
 const app = express();
 
-// Database Connection
+// Connect DB
 connectDB();
 
-// Middlewares
+// Middleware
 app.use(express.json());
 
 app.use(
@@ -27,7 +27,7 @@ app.use(
   }),
 );
 
-// Health Check
+// Health Route
 app.get("/", (req, res) => {
   res.status(200).json({
     success: true,
@@ -35,11 +35,20 @@ app.get("/", (req, res) => {
   });
 });
 
+// Debug Route
+app.get("/test-db", (req, res) => {
+  const mongoose = require("mongoose");
+
+  res.json({
+    dbConnected: mongoose.connection.readyState,
+  });
+});
+
 // Routes
 app.use("/api/users", userRoutes);
 app.use("/api/bookings", bookingRoutes);
 
-// Error Handler
+// Error Middleware
 app.use(errorMiddleware);
 
 // Export for Vercel
