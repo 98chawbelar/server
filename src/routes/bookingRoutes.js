@@ -5,6 +5,7 @@ const {
   createBooking,
   deleteBooking,
   getBookingSummary,
+  getGroupedBookings,
 } = require("../controllers/bookingController");
 
 const authMiddleware = require("../middleware/authMiddleware");
@@ -22,6 +23,6 @@ router.delete("/:id", deleteBooking);
 
 router.get("/summary", roleMiddleware("OWNER", "ADMIN"), getBookingSummary);
 
-router.get("/grouped", roleMiddleware("OWNER", "ADMIN"));
+router.get("/grouped", roleMiddleware("OWNER", "ADMIN"), getGroupedBookings);
 
 module.exports = router;

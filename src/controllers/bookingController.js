@@ -13,6 +13,7 @@ const getBookings = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({
+      success: false,
       message: error.message,
     });
   }
@@ -24,6 +25,7 @@ const createBooking = async (req, res) => {
 
     if (!startTime || !endTime) {
       return res.status(400).json({
+        success: false,
         message: "Start time and end time are required",
       });
     }
@@ -32,6 +34,7 @@ const createBooking = async (req, res) => {
 
     if (!validation.valid) {
       return res.status(400).json({
+        success: false,
         message: validation.message,
       });
     }
@@ -50,6 +53,7 @@ const createBooking = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({
+      success: false,
       message: error.message,
     });
   }
@@ -61,6 +65,7 @@ const deleteBooking = async (req, res) => {
 
     if (!booking) {
       return res.status(404).json({
+        success: false,
         message: "Booking not found",
       });
     }
@@ -73,6 +78,7 @@ const deleteBooking = async (req, res) => {
 
     if (!isOwner && !isAdmin && !isBookingOwner) {
       return res.status(403).json({
+        success: false,
         message: "You can only delete your own bookings",
       });
     }
@@ -139,9 +145,63 @@ const getBookingSummary = async (req, res) => {
   }
 };
 
+// OWNER / ADMIN
+const getGroupedBookings = async (req, res) => {
+  try {
+    const groupedBookings = await Booking.aggregate([
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      {
+        $unwind: "$user",
+      },
+      {
+        $group: {
+          _id: "$userId",
+          userName: {
+            $first: "$user.name",
+          },
+          role: {
+            $first: "$user.role",
+          },
+          bookings: {
+            $push: {
+              bookingId: "$_id",
+              startTime: "$startTime",
+              endTime: "$endTime",
+              createdAt: "$createdAt",
+            },
+          },
+        },
+      },
+      {
+        $sort: {
+          userName: 1,
+        },
+      },
+    ]);
+
+    res.json({
+      success: true,
+      data: groupedBookings,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   getBookings,
   createBooking,
   deleteBooking,
   getBookingSummary,
+  getGroupedBookings,
 };
