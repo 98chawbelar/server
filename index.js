@@ -1,26 +1,23 @@
 require("dotenv").config();
 
 const express = require("express");
-
 const cors = require("cors");
 
 const connectDB = require("./src/config/db");
 
-const seedUsers = require("./src/seeder/seedUsers");
-
-// routes
+// Routes
 const userRoutes = require("./src/routes/userRoutes");
-
 const bookingRoutes = require("./src/routes/bookingRoutes");
 
-// middleware
+// Middleware
 const errorMiddleware = require("./src/middleware/errorMiddleware");
 
 const app = express();
 
-const PORT = process.env.PORT || 5000;
+// Database Connection
+connectDB();
 
-// middleware
+// Middlewares
 app.use(express.json());
 
 app.use(
@@ -30,7 +27,7 @@ app.use(
   }),
 );
 
-// health route
+// Health Check
 app.get("/", (req, res) => {
   res.status(200).json({
     success: true,
@@ -38,31 +35,12 @@ app.get("/", (req, res) => {
   });
 });
 
-// api routes
+// Routes
 app.use("/api/users", userRoutes);
-
 app.use("/api/bookings", bookingRoutes);
 
-// global error middleware
+// Error Handler
 app.use(errorMiddleware);
 
-// start server
-const startServer = async () => {
-  try {
-    // connect database
-    await connectDB();
-
-    // // create default users
-    // await seedUsers();
-
-    app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
-    });
-  } catch (error) {
-    console.log(error.message);
-
-    process.exit(1);
-  }
-};
-
-module.exports = startServer;
+// Export for Vercel
+module.exports = app;
