@@ -7,18 +7,6 @@ const seedUsers = async () => {
         name: "System Admin",
         role: "ADMIN",
       },
-      {
-        name: "Meeting Room Owner",
-        role: "OWNER",
-      },
-      {
-        name: "John Doe",
-        role: "USER",
-      },
-      {
-        name: "Sarah Smith",
-        role: "USER",
-      },
     ];
 
     for (const userData of users) {
