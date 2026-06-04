@@ -52,8 +52,8 @@ const startServer = async () => {
     // connect database
     await connectDB();
 
-    // create default users
-    await seedUsers();
+    // // create default users
+    // await seedUsers();
 
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
