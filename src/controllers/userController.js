@@ -106,9 +106,34 @@ const deleteUser = async (req, res) => {
   }
 };
 
+const updateUserRole = async (req, res) => {
+  try {
+    const { role } = req.body;
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(404).jsong({
+        success: false,
+        message: "User not found",
+      });
+    }
+    user.role = role;
+    await user.save();
+    res.json({
+      success: true,
+      data: user,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   getPublicUsers,
   getUsers,
   createUser,
   deleteUser,
+  updateUserRole,
 };

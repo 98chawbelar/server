@@ -7,6 +7,7 @@ const {
   getUsers,
   createUser,
   deleteUser,
+  updateUserRole,
 } = require("../controllers/userController");
 
 const authMiddleware = require("../middleware/authMiddleware");
@@ -20,6 +21,8 @@ router.get("/public", getPublicUsers);
 router.get("/", authMiddleware, roleMiddleware("ADMIN"), getUsers);
 
 router.post("/", authMiddleware, roleMiddleware("ADMIN"), createUser);
+
+router.patch("/:id/role", updateUserRole);
 
 router.delete("/:id", authMiddleware, roleMiddleware("ADMIN"), deleteUser);
 
